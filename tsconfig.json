@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "noEmitHelpers": true,
+    "noErrorTruncation": false,
+    "noUnusedLocals": true,
+    "outDir": "dist",
+    "strict": true,
+    "target": "esnext"
+  },
+  "include": ["src"]
+}
