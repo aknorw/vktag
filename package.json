@@ -6,11 +6,12 @@
   },
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "ts-node ./bin/cli",
-    "pretty": "prettier --config .prettierrc --check 'src/**/*.{js,ts}'",
-    "lint": "eslint --ext .js,.ts src",
+    "pretty": "prettier --config .prettierrc --check '{bin,src}/**/*.{js,ts}'",
+    "format": "prettier --config .prettierrc --write '{bin,src}/**/*.{js,ts}'",
+    "lint": "eslint --ext .js,.ts bin,src",
     "build": "tsc -p .",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "dev": "yarn build && ts-node ./bin/cli"
   },
   "lint-staged": {
     "*.{js,ts}": [
@@ -18,8 +19,15 @@
       "yarn lint"
     ]
   },
+  "dependencies": {
+    "glob-promise": "^3.4.0",
+    "inquirer": "^7.3.3",
+    "yargs": "^16.1.1"
+  },
   "devDependencies": {
+    "@types/inquirer": "^7.3.1",
     "@types/node": "^14.14.10",
+    "@types/yargs": "^15.0.10",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "eslint": "^7.14.0",
