@@ -34,7 +34,7 @@ export async function getFilesFromFolder(path?: string): Promise<Array<string>> 
 
   const files = await getAudioFilesInFolder(folder)
 
-  console.log(`Found ${files.length} in folder ${folder}`) // @TODO: Add chalk.
+  console.log(`Found ${files.length} audio files in folder ${folder}`) // @TODO: Add chalk.
 
   if (!files.length) {
     const chosenFolder = await askForFolder()
