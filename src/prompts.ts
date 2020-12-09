@@ -2,7 +2,7 @@ import process from 'process'
 
 import inquirer from 'inquirer'
 
-import { getAudioFilesInFolder } from './helpers'
+import { getAudioFilesInFolder, getReleaseData } from './helpers'
 
 export async function askForReleaseId() {
   const { id } = await inquirer.prompt({
@@ -57,4 +57,14 @@ export async function getFilesFromFolder(path?: string): Promise<Array<string>> 
   }
 
   return files
+}
+
+type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
+
+export async function tagAudioFile(
+  path: string,
+  releaseData: Awaited<ReturnType<typeof getReleaseData>>,
+  availableTracks: Set<any>,
+) {
+  // @TODO
 }
