@@ -77,7 +77,7 @@ export async function askForAutoTagConfirmation(enrichedFiles: ReadonlyArray<Enr
 
 export async function tagEnrichedFiles(
   enrichedFiles: ReadonlyArray<EnrichedFile>,
-  { artists, album, publisher, date, genre, tracks }: ReleaseData,
+  { album, publisher, date, genre, tracks }: ReleaseData,
   shouldAutoTag = false,
 ) {
   for await (const file of enrichedFiles) {
@@ -90,7 +90,7 @@ export async function tagEnrichedFiles(
           choices: [...tracks.keys()],
         })
 
-    const { title, trackNumber } = tracks.get(chosenTrack)!
+    const { artists, title, trackNumber } = tracks.get(chosenTrack)!
 
     // Remove chosen track from the tracklist to avoid displaying it in future prompts.
     tracks.delete(chosenTrack)
@@ -99,7 +99,7 @@ export async function tagEnrichedFiles(
     const tags = {
       title,
       trackNumber: trackNumber.toString(),
-      artist: artists.join(', '), // @TODO: We may want to retrieve the one for this track.
+      artist: artists.join(' / '),
       album,
       date,
       genre,

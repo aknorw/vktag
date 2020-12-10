@@ -18,13 +18,18 @@ interface Track {
   position: string
   trackNumber: number
   title: string
+  artists: ReadonlyArray<string>
   type_?: string
+}
+
+function trimArtistName({ name }: { name: string }) {
+  return name.replace(/\([0-9]*\)/g, '').trim()
 }
 
 export async function getReleaseData(releaseId: number) {
   const { artists, styles, title, tracklist, year, labels } = await client.getRelease(releaseId)
 
-  const trimmedArtists = artists.map(({ name }) => name.replace(/\([0-9]*\)/g, '').trim())
+  const trimmedArtists = artists.map(trimArtistName)
 
   const trueLabels = labels.filter(({ entity_type_name }) => entity_type_name === 'Label')
   const { name, catno } = trueLabels[0] ?? {}
@@ -36,18 +41,21 @@ export async function getReleaseData(releaseId: number) {
   const tracklistMap = new Map<string, Track>()
 
   // @TODO: Use `type_` to check for multiple track.
-  tracklist?.forEach(({ position, title }, index) => {
-    const trimmedTitle = title.trim()
+
+  tracklist?.forEach((track, index) => {
+    const trimmedTitle = track.title.trim()
 
     tracklistMap.set(trimmedTitle, {
-      position,
+      position: track.position,
       trackNumber: index + 1,
       title: trimmedTitle,
+      // @TODO: Add `artists` in tracklist in Discojs.
+      // @ts-ignore
+      artists: track.artists?.map(trimArtistName) ?? trimmedArtists,
     })
   })
 
   return {
-    artists: trimmedArtists,
     album: title.trim(),
     publisher,
     date,
