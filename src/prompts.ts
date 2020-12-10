@@ -73,7 +73,7 @@ export async function askForAutoTagConfirmation() {
 
 export async function tagEnrichedFiles(
   enrichedFiles: ReadonlyArray<EnrichedFile>,
-  { artists, album, publisher, year, genre, tracks }: ReleaseData,
+  { artists, album, publisher, date, genre, tracks }: ReleaseData,
   shouldAutoTag = false,
 ) {
   for await (const file of enrichedFiles) {
@@ -97,7 +97,7 @@ export async function tagEnrichedFiles(
       trackNumber: trackNumber.toString(),
       artist: artists.join(', '), // @TODO: We may want to retrieve the one for this track.
       album,
-      date: `${year}-01-01`, // @TODO: Fix this if we have a release date with other format.
+      date,
       genre,
       publisher
     }

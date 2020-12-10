@@ -31,6 +31,8 @@ export async function getReleaseData(releaseId: number) {
   // @TODO: Check if catno is defined
   const publisher = name ? `${name.trim()} (${catno})` : undefined
 
+  const date = year ? `${year}-01-01` : undefined
+
   const tracklistMap = new Map<string, Track>()
 
   // @TODO: Use `type_` to check for multiple track.
@@ -48,7 +50,7 @@ export async function getReleaseData(releaseId: number) {
     artists: trimmedArtists,
     album: title.trim(),
     publisher,
-    year,
+    date,
     genre: styles?.join(', '),
     tracks: tracklistMap,
   }
