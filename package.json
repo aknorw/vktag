@@ -6,9 +6,10 @@
   },
   "license": "UNLICENSED",
   "scripts": {
-    "pretty": "prettier --config .prettierrc --check '{bin,src}/**/*.{js,ts}'",
-    "format": "prettier --config .prettierrc --write '{bin,src}/**/*.{js,ts}'",
-    "lint": "eslint --ext .js,.ts bin,src",
+    "pretty": "prettier --config .prettierrc --check '{bin,src,tests}/**/*.{js,ts}'",
+    "format": "prettier --config .prettierrc --write '{bin,src,tests}/**/*.{js,ts}'",
+    "lint": "eslint --ext .js,.ts bin,src,tests",
+    "test": "jest",
     "build": "tsc -p .",
     "package": "yarn build && pkg . --out-path pkg/",
     "precommit": "lint-staged",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@types/inquirer": "^7.3.1",
+    "@types/mock-fs": "^4.13.0",
     "@types/node": "^14.14.10",
     "@types/string-similarity": "^4.0.0",
     "@types/yargs": "^15.0.10",
@@ -40,9 +42,12 @@
     "fp-ts": "^2.9.0",
     "husky": "^4.3.0",
     "io-ts": "^2.2.13",
+    "jest": "^26.6.3",
     "lint-staged": "^10.5.2",
+    "mock-fs": "^4.13.0",
     "pkg": "^4.4.9",
     "prettier": "^2.2.0",
+    "ts-jest": "^26.4.4",
     "ts-node": "^9.0.0",
     "typescript": "^4.1.2"
   }
