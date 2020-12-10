@@ -14,11 +14,6 @@ export async function getAudioFilesInFolder(path: string) {
     nocase: true,
   })
 }
-
-function parseArtists(artists: ReadonlyArray<{ name: string }>) {
-  return artists.map(({ name }) => name.replace(/\([0-9]*\)/g, '').trim())
-}
-
 interface Track {
   position: string
   trackNumber: number
@@ -26,11 +21,19 @@ interface Track {
   type_?: string
 }
 
-// @TODO: Use `type_` to check for multiple track.
-// @TODO: Change any
-function parseTracklist(tracklist?: ReadonlyArray<any>) {
+export async function getReleaseData(releaseId: number) {
+  const { artists, styles, title, tracklist, year, labels } = await client.getRelease(releaseId)
+
+  const trimmedArtists = artists.map(({ name }) => name.replace(/\([0-9]*\)/g, '').trim())
+
+  const trueLabels = labels.filter(({entity_type_name}) => entity_type_name === 'Label')
+  const {name, catno} = trueLabels[0] ?? {};
+  // @TODO: Check if catno is defined
+  const publisher = name ? `${name.trim()} (${catno})` : undefined
+
   const tracklistMap = new Map<string, Track>()
 
+  // @TODO: Use `type_` to check for multiple track.
   tracklist?.forEach(({ position, title }, index) => {
     const trimmedTitle = title.trim()
 
@@ -41,18 +44,13 @@ function parseTracklist(tracklist?: ReadonlyArray<any>) {
     })
   })
 
-  return tracklistMap
-}
-
-export async function getReleaseData(releaseId: number) {
-  const { artists, styles, title, tracklist, year } = await client.getRelease(releaseId)
-
   return {
-    artists: parseArtists(artists),
+    artists: trimmedArtists,
     album: title.trim(),
+    publisher,
     year,
     genre: styles?.join(', '),
-    tracks: parseTracklist(tracklist),
+    tracks: tracklistMap,
   }
 }
 
