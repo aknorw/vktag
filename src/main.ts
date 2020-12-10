@@ -20,7 +20,7 @@ export async function main(params: Parameters) {
   const shouldAutoTag = enrichedFiles.every(({ hasPosition, isCandidate }) => hasPosition && isCandidate)
     ? params.answerYes
       ? true
-      : await askForAutoTagConfirmation()
+      : await askForAutoTagConfirmation(enrichedFiles)
     : false
 
   await tagEnrichedFiles(enrichedFiles, releaseData, shouldAutoTag)

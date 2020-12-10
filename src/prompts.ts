@@ -59,8 +59,12 @@ export async function getFilesFromFolder(path?: string): Promise<Array<string>> 
   return files
 }
 
-export async function askForAutoTagConfirmation() {
-  // @TODO: Display table with possible tags.
+export async function askForAutoTagConfirmation(enrichedFiles: ReadonlyArray<EnrichedFile>) {
+  // Display what has been found to let the user know we're smart (or not).
+  enrichedFiles.forEach(({ fileName, track, confidence}) => {
+    const {position, title} = track!
+    console.log(`🧲 ${fileName} ➡️  ${position} - ${title} (${(100 * confidence).toFixed(0)}% confident)`)
+  })
 
   const { shouldAutoTag } = await inquirer.prompt({
     type: 'confirm',
