@@ -28,8 +28,8 @@ export async function getReleaseData(releaseId: number) {
 
   const trueLabels = labels.filter(({entity_type_name}) => entity_type_name === 'Label')
   const {name, catno} = trueLabels[0] ?? {};
-  // @TODO: Check if catno is defined
-  const publisher = name ? `${name.trim()} (${catno})` : undefined
+  let publisher = name?.trim()
+  if (catno) publisher += ` (${catno})`
 
   const date = year ? `${year}-01-01` : undefined
 
