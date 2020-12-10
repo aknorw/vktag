@@ -5,7 +5,7 @@ const filesAndTags = {
   '10 - Dance Medley.aiff': {
     title: 'Dance Medley',
     trackNumber: '10',
-    artist: 'Nazia Hassan / Zoheb Hassan',
+    artist: 'Nazia Hassan, Zoheb Hassan',
     album: 'Young Tarang',
     date: '1984-01-01',
     genre: 'Bollywood, Disco',

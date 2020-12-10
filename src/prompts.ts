@@ -99,7 +99,7 @@ export async function tagEnrichedFiles(
     const tags = {
       title,
       trackNumber: trackNumber.toString(),
-      artist: artists.join(' / '),
+      artist: artists.join(', '),
       album,
       date,
       genre,
