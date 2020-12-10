@@ -28,7 +28,7 @@ async function askForFolder() {
   return folder as string
 }
 
-export async function getFilesFromFolder(path?: string): Promise<Array<string>> {
+export async function getFilesFromFolder(path?: string, forceUseCwd?: boolean): Promise<Array<string>> {
   const hasPath = Boolean(path)
   const folder = path || process.cwd()
 
@@ -43,7 +43,7 @@ export async function getFilesFromFolder(path?: string): Promise<Array<string>> 
 
   // If `path` is undefined, it means we found audio files in the current working directory.
   // Ask the user to confirm we should use them.
-  if (!hasPath && files.length > 0) {
+  if (!hasPath && files.length > 0 && !forceUseCwd) {
     const { shouldUseCwd } = await inquirer.prompt({
       type: 'confirm',
       name: 'shouldUseCwd',

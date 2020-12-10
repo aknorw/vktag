@@ -10,7 +10,7 @@ interface Parameters {
 
 export async function main(params: Parameters) {
   const releaseId = params.releaseId ?? (await askForReleaseId())
-  const files = await getFilesFromFolder(params.folder)
+  const files = await getFilesFromFolder(params.folder, params.answerYes)
 
   const releaseData = await getReleaseData(releaseId)
 
