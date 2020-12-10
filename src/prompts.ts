@@ -8,9 +8,9 @@ export async function askForReleaseId() {
   const { id } = await inquirer.prompt({
     type: 'number',
     name: 'id',
-    message: 'Discogs release id',
+    message: '💿 Discogs release id',
     filter: (input) => (!Number.isNaN(input) ? input : undefined),
-    validate: (input) => Boolean(input) || 'You must enter a valid release id!',
+    validate: (input) => Boolean(input) || '❌ You must enter a valid release id!',
   })
 
   return id as number
@@ -20,9 +20,9 @@ async function askForFolder() {
   const { folder } = await inquirer.prompt({
     type: 'input',
     name: 'folder',
-    message: 'Folder where the tracks are located',
+    message: '📂 Folder where the tracks are located',
     filter: (input) => (input.trim().length > 0 ? input : undefined),
-    validate: (input) => Boolean(input) || 'You must enter a valid folder!',
+    validate: (input) => Boolean(input) || '❌ You must enter a valid folder!',
   })
 
   return folder as string
@@ -34,7 +34,7 @@ export async function getFilesFromFolder(path?: string): Promise<Array<string>> 
 
   const files = await getAudioFilesInFolder(folder)
 
-  console.log(`Found ${files.length} audio files in folder ${folder}`) // @TODO: Add chalk.
+  console.log(`🎵 Found ${files.length} audio files in folder ${folder}`)
 
   if (!files.length) {
     const chosenFolder = await askForFolder()
@@ -47,7 +47,7 @@ export async function getFilesFromFolder(path?: string): Promise<Array<string>> 
     const { shouldUseCwd } = await inquirer.prompt({
       type: 'confirm',
       name: 'shouldUseCwd',
-      message: 'Do you want to continue?',
+      message: '❓ Do you want to continue?',
     })
 
     if (!shouldUseCwd) {
@@ -65,7 +65,7 @@ export async function askForAutoTagConfirmation() {
   const { shouldAutoTag } = await inquirer.prompt({
     type: 'confirm',
     name: 'shouldAutoTag',
-    message: 'VKtag is able to automatically tag your files, do you want to continue?',
+    message: '🤖 VKtag is able to automatically tag your files, do you want to continue?',
   })
 
   return shouldAutoTag as boolean
@@ -82,7 +82,7 @@ export async function tagEnrichedFiles(
       : await inquirer.prompt({
           type: 'list',
           name: 'chosenTrack',
-          message: `Choose track for ${file.fileName}`,
+          message: `🔗 Choose track for ${file.fileName}`,
           choices: [...tracks.keys()],
         })
 
@@ -106,6 +106,8 @@ export async function tagEnrichedFiles(
 
     // If autotagging files, display something in the console to let the user know that we're doing something.
     if (shouldAutoTag)
-      console.log(`${file.fileName} has been tagged!`) // @TODO: Add chalk.
+      console.log(`🔖 ${file.fileName} has been tagged!`)
   }
+
+  console.log('🎉 All files have been tagged!')
 }
