@@ -61,8 +61,8 @@ export async function getFilesFromFolder(path?: string): Promise<Array<string>> 
 
 export async function askForAutoTagConfirmation(enrichedFiles: ReadonlyArray<EnrichedFile>) {
   // Display what has been found to let the user know we're smart (or not).
-  enrichedFiles.forEach(({ fileName, track, confidence}) => {
-    const {position, title} = track!
+  enrichedFiles.forEach(({ fileName, track, confidence }) => {
+    const { position, title } = track!
     console.log(`🧲 ${fileName} ➡️  ${position} - ${title} (${(100 * confidence).toFixed(0)}% confident)`)
   })
 
@@ -103,14 +103,13 @@ export async function tagEnrichedFiles(
       album,
       date,
       genre,
-      publisher
+      publisher,
     }
 
     await tagFile(file, tags)
 
     // If autotagging files, display something in the console to let the user know that we're doing something.
-    if (shouldAutoTag)
-      console.log(`🔖 ${file.fileName} has been tagged!`)
+    if (shouldAutoTag) console.log(`🔖 ${file.fileName} has been tagged!`)
   }
 
   console.log('🎉 All files have been tagged!')

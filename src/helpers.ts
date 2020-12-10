@@ -26,8 +26,8 @@ export async function getReleaseData(releaseId: number) {
 
   const trimmedArtists = artists.map(({ name }) => name.replace(/\([0-9]*\)/g, '').trim())
 
-  const trueLabels = labels.filter(({entity_type_name}) => entity_type_name === 'Label')
-  const {name, catno} = trueLabels[0] ?? {};
+  const trueLabels = labels.filter(({ entity_type_name }) => entity_type_name === 'Label')
+  const { name, catno } = trueLabels[0] ?? {}
   let publisher = name?.trim()
   if (catno) publisher += ` (${catno})`
 
