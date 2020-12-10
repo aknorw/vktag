@@ -40,20 +40,22 @@ export async function getReleaseData(releaseId: number) {
 
   const tracklistMap = new Map<string, Track>()
 
-  // @TODO: Use `type_` to check for multiple track.
+  // Medley tracks have `type_` set to `heading`.
+  // As a first step, we'll simply filter out tracks that contain a dot.
+  tracklist
+    ?.filter(({ position }) => !position.includes('.'))
+    .forEach((track, index) => {
+      const trimmedTitle = track.title.trim()
 
-  tracklist?.forEach((track, index) => {
-    const trimmedTitle = track.title.trim()
-
-    tracklistMap.set(trimmedTitle, {
-      position: track.position,
-      trackNumber: index + 1,
-      title: trimmedTitle,
-      // @TODO: Add `artists` in tracklist in Discojs.
-      // @ts-ignore
-      artists: track.artists?.map(trimArtistName) ?? trimmedArtists,
+      tracklistMap.set(trimmedTitle, {
+        position: track.position,
+        trackNumber: index + 1,
+        title: trimmedTitle,
+        // @TODO: Add `artists` in tracklist in Discojs.
+        // @ts-ignore
+        artists: track.artists?.map(trimArtistName) ?? trimmedArtists,
+      })
     })
-  })
 
   return {
     album: title.trim(),
