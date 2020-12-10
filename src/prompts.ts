@@ -2,7 +2,7 @@ import process from 'process'
 
 import inquirer from 'inquirer'
 
-import { getAudioFilesInFolder, getReleaseData } from './helpers'
+import { EnrichedFile, getAudioFilesInFolder, ReleaseData, tagFile } from './helpers'
 
 export async function askForReleaseId() {
   const { id } = await inquirer.prompt({
@@ -59,12 +59,53 @@ export async function getFilesFromFolder(path?: string): Promise<Array<string>> 
   return files
 }
 
-type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
+export async function askForAutoTagConfirmation() {
+  // @TODO: Display table with possible tags.
 
-export async function tagAudioFile(
-  path: string,
-  releaseData: Awaited<ReturnType<typeof getReleaseData>>,
-  availableTracks: Set<any>,
+  const { shouldAutoTag } = await inquirer.prompt({
+    type: 'confirm',
+    name: 'shouldAutoTag',
+    message: 'VKtag is able to automatically tag your files, do you want to continue?',
+  })
+
+  return shouldAutoTag as boolean
+}
+
+export async function tagEnrichedFiles(
+  enrichedFiles: ReadonlyArray<EnrichedFile>,
+  { artists, album, year, genre, tracks }: ReleaseData,
+  shouldAutoTag = false,
 ) {
-  // @TODO
+  for await (const file of enrichedFiles) {
+    const { chosenTrack } = shouldAutoTag
+      ? { chosenTrack: file.track!.title }
+      : await inquirer.prompt({
+          type: 'list',
+          name: 'chosenTrack',
+          message: `Choose track for ${file.fileName}`,
+          choices: [...tracks.keys()],
+        })
+
+    const { title, trackNumber } = tracks.get(chosenTrack)!
+
+    // Remove chosen track from the tracklist to avoid displaying it in future prompts.
+    tracks.delete(chosenTrack)
+
+    // Create tags for the file.
+    const tags = {
+      title,
+      trackNumber: trackNumber.toString(),
+      artist: artists.join(', '), // @TODO: We may want to retrieve the one for this track.
+      album,
+      date: `${year}-01-01`, // @TODO: Fix this if we have a release date with other format.
+      genre,
+      publisher: 'Didier', // @TODO: Retrieve label
+    }
+
+    await tagFile(file, tags)
+
+    // If autotagging files, display something in the console to let the user know that we're doing something.
+    if (shouldAutoTag)
+      console.log(`${file.fileName} has been tagged!`) // @TODO: Add chalk.
+  }
 }

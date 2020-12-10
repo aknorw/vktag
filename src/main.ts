@@ -1,9 +1,11 @@
-import { getReleaseData } from './helpers'
-import { askForReleaseId, getFilesFromFolder, tagAudioFile } from './prompts'
+import { enrichFiles, getReleaseData } from './helpers'
+import { askForAutoTagConfirmation, askForReleaseId, getFilesFromFolder, tagEnrichedFiles } from './prompts'
 
 interface Parameters {
   releaseId?: number
   folder?: string
+  threshold?: number
+  answerYes?: boolean
 }
 
 export async function main(params: Parameters) {
@@ -12,10 +14,14 @@ export async function main(params: Parameters) {
 
   const releaseData = await getReleaseData(releaseId)
 
-  console.log(releaseId, files)
-  const availableTracks = new Set(Array.from(releaseData.tracks).map(({ position, title }) => `${position} - ${title}`))
+  const enrichedFiles = enrichFiles(files, releaseData, params.threshold)
 
-  for (const file of files) {
-    await tagAudioFile(file, releaseData, availableTracks)
-  }
+  // If every file has a position and a best match, maybe ask if the user wants to auto-tags tracks.
+  const shouldAutoTag = enrichedFiles.every(({ hasPosition, isCandidate }) => hasPosition && isCandidate)
+    ? params.answerYes
+      ? true
+      : await askForAutoTagConfirmation()
+    : false
+
+  await tagEnrichedFiles(enrichedFiles, releaseData, shouldAutoTag)
 }

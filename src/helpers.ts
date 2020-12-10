@@ -1,5 +1,9 @@
+import { basename, extname } from 'path'
+
 import { Discojs } from 'discojs'
 import glob from 'glob-promise'
+import { Promise as id3, Tags } from 'node-id3'
+import { findBestMatch } from 'string-similarity'
 
 const client = new Discojs()
 
@@ -15,14 +19,29 @@ function parseArtists(artists: ReadonlyArray<{ name: string }>) {
   return artists.map(({ name }) => name.replace(/\([0-9]*\)/g, '').trim())
 }
 
-// @TODO: Use `type_` to check for multiple track.
-function parseTracklist(tracklist?: ReadonlyArray<{ position: string; title: string; type_: string }>) {
-  if (!tracklist) return []
+interface Track {
+  position: string
+  trackNumber: number
+  title: string
+  type_?: string
+}
 
-  return tracklist.map(({ position, title }) => ({
-    position,
-    title: title.trim(),
-  }))
+// @TODO: Use `type_` to check for multiple track.
+// @TODO: Change any
+function parseTracklist(tracklist?: ReadonlyArray<any>) {
+  const tracklistMap = new Map<string, Track>()
+
+  tracklist?.forEach(({ position, title }, index) => {
+    const trimmedTitle = title.trim()
+
+    tracklistMap.set(trimmedTitle, {
+      position,
+      trackNumber: index + 1,
+      title: trimmedTitle,
+    })
+  })
+
+  return tracklistMap
 }
 
 export async function getReleaseData(releaseId: number) {
@@ -30,9 +49,68 @@ export async function getReleaseData(releaseId: number) {
 
   return {
     artists: parseArtists(artists),
-    title: title.trim(),
+    album: title.trim(),
     year,
     genre: styles?.join(', '),
     tracks: parseTracklist(tracklist),
   }
+}
+
+type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
+export type ReleaseData = Awaited<ReturnType<typeof getReleaseData>>
+
+interface FileBestMatch {
+  track?: Track
+  confidence: number
+  isCandidate: boolean
+}
+
+function findBestMatchForFile(fileName: string, tracks: Map<string, Track>, bestMatchThreshold: number) {
+  const trackNames = [...tracks.keys()]
+
+  const {
+    bestMatch: { target, rating },
+  } = findBestMatch(fileName, trackNames)
+
+  return {
+    track: tracks.get(target),
+    confidence: rating,
+    isCandidate: rating >= bestMatchThreshold,
+  }
+}
+
+export interface EnrichedFile extends FileBestMatch {
+  file: string
+  fileName: string
+  hasPosition: boolean
+}
+
+const trackPositionRegExp = new RegExp('[a-z]?[0-9]+', 'i')
+
+export function enrichFiles(
+  files: Array<string>,
+  releaseData: ReleaseData,
+  bestMatchThreshold = 0.5,
+): ReadonlyArray<EnrichedFile> {
+  return files.map((file) => {
+    const fileName = basename(file, extname(file))
+
+    // Check if filename contains `01` or `A1` for example.
+    const hasPosition = trackPositionRegExp.test(fileName)
+
+    // Retrieve best match from Discogs tracks for this file.
+    const bestMatch = findBestMatchForFile(fileName, releaseData.tracks, bestMatchThreshold)
+
+    return {
+      file,
+      fileName,
+      hasPosition,
+      ...bestMatch,
+    }
+  })
+}
+
+// is partOfSet compilation?
+export async function tagFile({ file }: EnrichedFile, tags: Tags) {
+  await id3.update(tags, file)
 }

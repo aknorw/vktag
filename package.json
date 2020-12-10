@@ -23,11 +23,14 @@
     "discojs": "^2.0.0",
     "glob-promise": "^3.4.0",
     "inquirer": "^7.3.3",
+    "node-id3": "^0.2.1",
+    "string-similarity": "^4.0.3",
     "yargs": "^16.1.1"
   },
   "devDependencies": {
     "@types/inquirer": "^7.3.1",
     "@types/node": "^14.14.10",
+    "@types/string-similarity": "^4.0.0",
     "@types/yargs": "^15.0.10",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
