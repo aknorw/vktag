@@ -34,6 +34,7 @@ const program = yargs
     return true
   })
   .usage('Automatically tag tracks from Discogs!')
+  .version()
   .help()
 
 main(program.argv)
